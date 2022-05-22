@@ -8,7 +8,6 @@ import zio.console._
 object Main extends zio.App {
 
   override def run(args: List[String]) = {
-
     val userSubscriptionLayer: ZLayer[Any, Throwable, UserSubscription.Env] =
       (UserDb.live ++ UserEmailer.live ++ Console.live) >>> UserSubscription.live
 
