@@ -3,13 +3,13 @@ package com.michaelmaysonet74.ziopoc.services
 import com.michaelmaysonet74.ziopoc.models.User
 import zio.{RIO, Has, Task, ZLayer}
 
-object UserRepository {
+object UserRepo {
 
   trait Service {
     def insert(user: User): Task[Unit]
   }
 
-  type Env = Has[UserRepository.Service]
+  type Env = Has[UserRepo.Service]
 
   val live: ZLayer[Any, Nothing, Env] = ZLayer.succeed {
     new Service {

@@ -8,7 +8,7 @@ object UserSubscription {
 
   class Service(
     notifier: UserEmailer.Service,
-    userRepo: UserRepository.Service,
+    userRepo: UserRepo.Service,
     console: Console.Service
   ) {
 
@@ -31,8 +31,8 @@ object UserSubscription {
 
   type Env = Has[UserSubscription.Service]
 
-  val live: ZLayer[UserEmailer.Env with UserRepository.Env with Console, Nothing, Env] =
-    ZLayer.fromServices[UserEmailer.Service, UserRepository.Service, Console.Service, UserSubscription.Service](
+  val live: ZLayer[UserEmailer.Env with UserRepo.Env with Console, Nothing, Env] =
+    ZLayer.fromServices[UserEmailer.Service, UserRepo.Service, Console.Service, UserSubscription.Service](
       (emailer, db, console) => new Service(emailer, db, console)
     )
 

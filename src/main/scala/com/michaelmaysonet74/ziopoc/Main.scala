@@ -1,7 +1,7 @@
 package com.michaelmaysonet74.ziopoc
 
 import com.michaelmaysonet74.ziopoc.models.User
-import com.michaelmaysonet74.ziopoc.services.{UserEmailer, UserRepository, UserSubscription}
+import com.michaelmaysonet74.ziopoc.services.{UserEmailer, UserRepo, UserSubscription}
 import zio.{ZIO, ZLayer, ExitCode}
 import zio.console._
 import zio.magic._
@@ -12,7 +12,7 @@ object Main extends zio.App {
     UserSubscription
       .subscribe()
       .inject(
-        UserRepository.live,
+        UserRepo.live,
         UserEmailer.live,
         Console.live,
         UserSubscription.live
