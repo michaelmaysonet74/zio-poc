@@ -1,14 +1,27 @@
 package com.michaelmaysonet74.ziopoc.services
 
-import zio.{RIO, Has, Task, ZLayer}
 import com.michaelmaysonet74.ziopoc.models.User
+import zio.{RIO, Has, Task, ZLayer}
+import zio.console._
 
 object UserSubscription {
 
-  class Service(notifier: UserEmailer.Service, userRepo: UserDb.Service) {
+  class Service(
+    notifier: UserEmailer.Service,
+    userRepo: UserDb.Service,
+    console: Console.Service
+  ) {
 
-    def subscribe(user: User): Task[User] = {
+    def subscribe(): Task[User] = {
       for {
+        _ <- console.putStrLn("What's your Name?")
+        name <- console.getStrLn
+
+        _ <- console.putStrLn("What's your Email?")
+        email <- console.getStrLn
+
+        user = User(name, email)
+
         _ <- userRepo.insert(user)
         _ <- notifier.notify(user, s"Welcome, ${user.name}!")
       } yield user
@@ -18,12 +31,12 @@ object UserSubscription {
 
   type Env = Has[UserSubscription.Service]
 
-  val live: ZLayer[UserEmailer.Env with UserDb.Env, Nothing, Env] =
-    ZLayer.fromServices[UserEmailer.Service, UserDb.Service, UserSubscription.Service]((emailer, db) =>
-      new Service(emailer, db)
+  val live: ZLayer[UserEmailer.Env with UserDb.Env with Console, Nothing, Env] =
+    ZLayer.fromServices[UserEmailer.Service, UserDb.Service, Console.Service, UserSubscription.Service](
+      (emailer, db, console) => new Service(emailer, db, console)
     )
 
-  def subscribe(user: User): RIO[Env, User] =
-    RIO.accessM(_.get.subscribe(user))
+  def subscribe(): RIO[Env, User] =
+    RIO.accessM(_.get.subscribe())
 
 }
